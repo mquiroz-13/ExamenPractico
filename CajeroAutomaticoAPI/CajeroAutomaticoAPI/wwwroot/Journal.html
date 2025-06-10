@@ -1,0 +1,466 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Cajero Automático - Registros de Transacción</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        
+        nav {
+            margin-bottom: 20px;
+            font-size: 1.1em;
+            padding: 10px;
+            background-color: #e0e7f2;
+            border-radius: 8px;
+            box-shadow: 0 2px 5px rgba(0,0,0,0.05);
+        }
+
+            nav a {
+                margin-right: 25px;
+                text-decoration: none;
+                color: #0056b3;
+                font-weight: bold;
+                transition: color 0.3s ease;
+            }
+
+                nav a:hover {
+                    color: #007bff;
+                }
+
+
+        
+        .container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 800px; 
+            box-sizing: border-box;
+            text-align: center;
+            margin-bottom: 20px; 
+        }
+
+        
+        h1 {
+            color: #0056b3; 
+            margin-bottom: 25px;
+            font-size: 2em;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 15px;
+        }
+
+        
+        ul {
+            list-style: none; 
+            padding: 0;
+            margin: 20px 0;
+        }
+
+        
+        li {
+            background-color: #e9f5ff; /* Fondo azul claro */
+            border: 1px solid #cce0f0;
+            border-radius: 5px;
+            padding: 12px 20px;
+            margin-bottom: 10px;
+            text-align: left;
+            font-size: 1.1em;
+            color: #004085; /* Texto azul oscuro */
+            transition: background-color 0.3s ease, transform 0.2s ease;
+            display: flex;
+            flex-wrap: wrap; /* Permite que los elementos se envuelvan */
+            justify-content: space-between; /* Espacio entre los elementos */
+            align-items: center;
+        }
+
+            li:hover {
+                background-color: #d6ebff; 
+                transform: translateY(-2px); 
+            }
+
+            li span {
+                display: block; 
+                flex-basis: 48%; 
+                margin-bottom: 5px;
+            }
+
+                li span.full-width {
+                    flex-basis: 100%; 
+                    margin-bottom: 5px;
+                    font-weight: bold;
+                    color: #0056b3;
+                    font-size: 1.2em;
+                }
+
+                li span.date-time {
+                    font-size: 0.9em;
+                    color: #666;
+                }
+
+
+        
+        .message {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #666;
+        }
+
+        /* --- Estilos para el formulario de inserción y la barra de búsqueda --- */
+        .form-section, .search-section {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 800px; 
+            box-sizing: border-box;
+            text-align: center;
+            margin-top: 20px; 
+        }
+
+        h2 {
+            color: #0056b3;
+            margin-bottom: 20px;
+            font-size: 1.6em;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+            .form-group label {
+                display: block;
+                margin-bottom: 5px;
+                font-weight: bold;
+                color: #555;
+            }
+
+            .form-group input[type="text"],
+            .form-group input[type="number"],
+            .form-group input[type="date"],
+            .form-group select,
+            .search-group input[type="text"] {
+                width: calc(100% - 22px); 
+                padding: 10px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                font-size: 1em;
+                box-sizing: border-box; 
+            }
+
+        button {
+            background-color: #28a745; 
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease;
+            margin-top: 10px; 
+        }
+
+            button:hover {
+                background-color: #218838; 
+            }
+
+        .search-group {
+            display: flex;
+            gap: 10px; 
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+            .search-group input[type="text"] {
+                flex-grow: 1; 
+                margin-bottom: 0; 
+            }
+
+            .search-group button {
+                margin-top: 0; 
+                padding: 10px 20px;
+                font-size: 1em;
+            }
+
+        #responseMessage {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        /* Estilos responsivos */
+        @media (max-width: 768px) {
+            .container, .form-section, .search-section {
+                padding: 20px;
+            }
+
+            h1, h2 {
+                font-size: 1.8em;
+            }
+
+            li {
+                font-size: 1em;
+                flex-direction: column; /* Apilar elementos de la lista en móviles */
+                align-items: flex-start;
+            }
+
+                li span {
+                    flex-basis: 100%;
+                    margin-bottom: 5px;
+                }
+
+            .search-group {
+                flex-direction: column; /* Apilar input y botón en móviles */
+                gap: 10px;
+            }
+
+                .search-group input[type="text"] {
+                    width: 100%;
+                }
+
+                .search-group button {
+                    width: 100%;
+                }
+        }
+    </style>
+</head>
+<body>
+    <nav style="margin-bottom: 20px; font-size: 1.1em; padding: 10px; background-color: #e0e7f2; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+        <a href="index.html" style="margin-right: 25px; text-decoration: none; color: #0056b3; font-weight: bold; transition: color 0.3s ease;">Tipos de Operación</a>
+        <a href="Journal.html" style="text-decoration: none; color: #0056b3; font-weight: bold; transition: color 0.3s ease;">Registros de Transacción</a>
+    </nav>
+
+    <div class="container">
+        <h1>Registros de Transacción</h1>
+        <div class="search-section">
+            <h2>Buscar Transacciones</h2>
+            <div class="search-group">
+                <input type="text" id="searchZona" placeholder="Buscar por zona (ej: Zona Norte)...">
+                <button id="searchJournalButton">Buscar</button>
+            </div>
+            <ul id="listaJournal">
+                
+                <div class="message" id="loadingJournalMessage">Cargando registros de transacción...</div>
+            </ul>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <h2>Registrar Nueva Transacción</h2>
+        <form id="transaccionForm">
+            <div class="form-group">
+                <label for="fiidtrans">ID Transacción:</label>
+                <input type="number" id="fiidtrans" name="Fiidtrans" required>
+            </div>
+            <div class="form-group">
+                <label for="fczona">Zona:</label>
+                <input type="text" id="fczona" name="Fczona" required>
+            </div>
+            <div class="form-group">
+                <label for="fdfechaopera">Fecha de Operación:</label>
+                <input type="date" id="fdfechaopera" name="Fdfechaopera" required>
+            </div>
+            <div class="form-group">
+                <label for="fiidoperacionDdl">Tipo de Operación:</label>
+                <select id="fiidoperacionDdl" name="Fiidoperacion" required>
+                    <option value="">Cargando tipos...</option>
+                </select>
+            </div>
+            <div class="form-group">
+                <label for="fcusuarioaltaJournal">Usuario de Alta:</label>
+                <input type="text" id="fcusuarioaltaJournal" name="Fcusuarioalta" required>
+            </div>
+            <button type="submit">Registrar Transacción</button>
+        </form>
+        <div id="journalResponseMessage"></div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            const baseUrl = `${window.location.protocol}//${window.location.host}`;
+            // URLs de tu API para Journal
+            const obtenerJournalApiUrl = `${baseUrl}/api/Cajero/ObtenerEntradasJournal`;
+            const insertarJournalApiUrl = `${baseUrl}/api/Cajero/InsertarEntradaJournal`;
+            // URL para cargar el DDL de tipos de operación
+            const obtenerTiposOperacionApiUrl = `${baseUrl}/api/Cajero/ObtenerTiposOperacion`;
+
+            let todasLasTransacciones = []; 
+
+            // --- Función para cargar y mostrar los registros de Journal ---
+            function cargarRegistrosJournal(filtroZona = '') {
+                $('#listaJournal').empty(); 
+                $('#listaJournal').append('<div class="message" id="loadingJournalMessage">Cargando registros de transacción...</div>');
+
+                $.ajax({
+                    url: obtenerJournalApiUrl,
+                    type: 'GET',
+                    success: function (response) {
+                        $('#loadingJournalMessage').remove(); 
+                        if (response.Codigo === 200) {
+                            if (response.Data && response.Data.length > 0) {
+                                todasLasTransacciones = response.Data; 
+                                const transaccionesFiltradas = todasLasTransacciones.filter(transaccion =>
+                                    transaccion.Fczona.toLowerCase().includes(filtroZona.toLowerCase())
+                                );
+
+                                if (transaccionesFiltradas.length > 0) {
+                                    transaccionesFiltradas.forEach(function (transaccion) {
+                                        
+                                        const fechaOpera = new Date(transaccion.Fdfechaopera).toLocaleDateString();
+                                        const fechaAlta = new Date(transaccion.Fdfechaalta).toLocaleString();
+
+                                        $('#listaJournal').append(
+                                            `<li>
+                                                <span class="full-width">ID Transacción: ${transaccion.Fiidtrans}</span>
+                                                <span>Zona: ${transaccion.Fczona}</span>
+                                                <span>Tipo Operación: ${transaccion.TipoOperacion ? transaccion.TipoOperacion.Fcdescoper : 'N/A'}</span>
+                                                <span>Usuario Alta: ${transaccion.Fcusuarioalta}</span>
+                                                <span class="date-time">Fecha Operación: ${fechaOpera}</span>
+                                                <span class="date-time">Fecha Alta Registro: ${fechaAlta}</span>
+                                            </li>`
+                                        );
+                                    });
+                                } else {
+                                    $('#listaJournal').append('<li class="message">No se encontraron transacciones con ese filtro.</li>');
+                                }
+                            } else {
+                                $('#listaJournal').append('<li class="message">No se encontraron registros de transacción.</li>');
+                            }
+                        } else {
+                            $('#listaJournal').append(`<li class="message" style="color: red;">Error al cargar: ${response.Mensaje || 'Código de respuesta no 200'}</li>`);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        $('#loadingJournalMessage').remove();
+                        console.error("Error en la petición AJAX (GET Journal):", status, error, xhr);
+                        $('#listaJournal').append(`<li class="message" style="color: red;">Error de conexión con el servidor: ${status} - ${error}</li>`);
+                        if (xhr.status === 404) {
+                            $('#listaJournal').append(`<li class="message" style="color: orange;">Verifica la URL de la API: ${obtenerJournalApiUrl}</li>`);
+                        }
+                    }
+                });
+            }
+
+            
+            function populateTipoOperacionDdl() {
+                $('#fiidoperacionDdl').empty(); 
+                $('#fiidoperacionDdl').append('<option value="">Cargando tipos...</option>');
+
+                $.ajax({
+                    url: obtenerTiposOperacionApiUrl,
+                    type: 'GET',
+                    success: function (response) {
+                        if (response.Codigo === 200 && response.Data && response.Data.length > 0) {
+                            $('#fiidoperacionDdl').empty(); 
+                            $('#fiidoperacionDdl').append('<option value="">-- Seleccione un tipo --</option>'); 
+
+                            response.Data.forEach(function (tipo) {
+                                $('#fiidoperacionDdl').append(`<option value="${tipo.Fiidoperacion}">${tipo.Fcdescoper}</option>`);
+                            });
+                        } else {
+                            $('#fiidoperacionDdl').empty();
+                            $('#fiidoperacionDdl').append('<option value="">Error al cargar tipos</option>');
+                            console.error("Error al cargar tipos de operación para DDL:", response.Mensaje);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        $('#fiidoperacionDdl').empty();
+                        $('#fiidoperacionDdl').append('<option value="">Error de conexión</option>');
+                        console.error("Error en la petición AJAX (GET Tipos DDL):", status, error, xhr);
+                    }
+                });
+            }
+
+            // --- Lógica para el formulario de inserción de Transacción (POST) ---
+            $('#transaccionForm').submit(function (event) {
+                event.preventDefault(); 
+
+                const transaccionData = {
+                    Fiidtrans: parseInt($('#fiidtrans').val()),
+                    Fczona: $('#fczona').val(),
+                    Fdfechaopera: $('#fdfechaopera').val(), 
+                    Fiidoperacion: parseInt($('#fiidoperacionDdl').val()), 
+                    Fcusuarioalta: $('#fcusuarioaltaJournal').val()
+                };
+
+               
+                if (isNaN(transaccionData.Fiidtrans) || !transaccionData.Fczona || !transaccionData.Fdfechaopera ||
+                    isNaN(transaccionData.Fiidoperacion) || !transaccionData.Fcusuarioalta) {
+                    $('#journalResponseMessage').text('Por favor, completa todos los campos correctamente.').removeClass('success').addClass('error');
+                    return;
+                }
+
+                $.ajax({
+                    url: insertarJournalApiUrl,
+                    type: 'POST',
+                    contentType: 'application/json',
+                    data: JSON.stringify(transaccionData),
+                    success: function (response) {
+                        const messageDiv = $('#journalResponseMessage');
+                        if (response.Codigo === 200) {
+                            messageDiv.text(response.Mensaje).removeClass('error').addClass('success');
+                            $('#transaccionForm')[0].reset(); 
+                            cargarRegistrosJournal(); 
+                        } else {
+                            messageDiv.text(`Error: ${response.Mensaje}`).removeClass('success').addClass('error');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        const messageDiv = $('#journalResponseMessage');
+                        let errorMessage = `Error en la petición AJAX (POST Journal): ${status} - ${error}`;
+                        if (xhr.responseJSON && xhr.responseJSON.Message) {
+                            errorMessage += `\nDetalle: ${xhr.responseJSON.Message}`;
+                        }
+                        console.error(errorMessage, xhr);
+                        messageDiv.text(errorMessage).removeClass('success').addClass('error');
+                    }
+                });
+            });
+
+           
+            $('#searchJournalButton').click(function () {
+                const searchTerm = $('#searchZona').val();
+                cargarRegistrosJournal(searchTerm); 
+            });
+
+            
+            $('#searchZona').keypress(function (event) {
+                if (event.which === 13) {
+                    $('#searchJournalButton').click();
+                }
+            });
+
+            
+            cargarRegistrosJournal(); 
+            populateTipoOperacionDdl(); 
+        });
+    </script>
+</body>
+</html>

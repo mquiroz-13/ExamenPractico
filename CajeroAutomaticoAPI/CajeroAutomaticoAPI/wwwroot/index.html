@@ -1,0 +1,350 @@
+﻿<!DOCTYPE html>
+<html>
+<head>
+    <title>Cajero Automático</title>
+    <script src="https://code.jquery.com/jquery-3.6.0.min.js"></script>
+    <style>
+        
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #f0f2f5;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+            display: flex;
+            flex-direction: column;
+            align-items: center;
+            min-height: 100vh;
+        }
+
+        
+        .container {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 600px;
+            box-sizing: border-box;
+            text-align: center;
+            margin-bottom: 20px; 
+        }
+
+        
+        h1 {
+            color: #0056b3; 
+            margin-bottom: 25px;
+            font-size: 2em;
+            border-bottom: 2px solid #e0e0e0;
+            padding-bottom: 15px;
+        }
+
+        
+        ul {
+            list-style: none; 
+            padding: 0;
+            margin: 20px 0;
+        }
+
+        
+        li {
+            background-color: #e9f5ff;
+            border: 1px solid #cce0f0;
+            border-radius: 5px;
+            padding: 12px 20px;
+            margin-bottom: 10px;
+            text-align: left;
+            font-size: 1.1em;
+            color: #004085; 
+            transition: background-color 0.3s ease, transform 0.2s ease;
+        }
+
+            li:hover {
+                background-color: #d6ebff; 
+                transform: translateY(-2px); 
+            }
+
+        
+        .message {
+            margin-top: 20px;
+            font-weight: bold;
+            color: #666;
+        }
+
+        
+        .form-section, .search-section {
+            background-color: #ffffff;
+            border-radius: 10px;
+            box-shadow: 0 4px 15px rgba(0, 0, 0, 0.1);
+            padding: 30px;
+            width: 100%;
+            max-width: 600px;
+            box-sizing: border-box;
+            text-align: center;
+            margin-top: 20px; 
+        }
+
+        h2 {
+            color: #0056b3;
+            margin-bottom: 20px;
+            font-size: 1.6em;
+        }
+
+        .form-group {
+            margin-bottom: 15px;
+            text-align: left;
+        }
+
+            .form-group label {
+                display: block;
+                margin-bottom: 5px;
+                font-weight: bold;
+                color: #555;
+            }
+
+            .form-group input[type="text"],
+            .form-group input[type="number"],
+            .search-group input[type="text"] {
+                width: calc(100% - 22px); 
+                padding: 10px;
+                border: 1px solid #ccc;
+                border-radius: 5px;
+                font-size: 1em;
+                box-sizing: border-box; 
+            }
+
+        button {
+            background-color: #28a745; 
+            color: white;
+            padding: 12px 25px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 1.1em;
+            transition: background-color 0.3s ease;
+            margin-top: 10px; 
+        }
+
+            button:hover {
+                background-color: #218838; 
+            }
+
+        .search-group {
+            display: flex;
+            gap: 10px; 
+            align-items: center;
+            margin-bottom: 20px;
+        }
+
+            .search-group input[type="text"] {
+                flex-grow: 1; 
+                margin-bottom: 0;
+            }
+
+            .search-group button {
+                margin-top: 0; 
+                padding: 10px 20px; 
+                font-size: 1em;
+            }
+
+        #responseMessage {
+            margin-top: 20px;
+            padding: 10px;
+            border-radius: 5px;
+            font-weight: bold;
+        }
+
+        .success {
+            background-color: #d4edda;
+            color: #155724;
+            border: 1px solid #c3e6cb;
+        }
+
+        .error {
+            background-color: #f8d7da;
+            color: #721c24;
+            border: 1px solid #f5c6cb;
+        }
+
+        
+        @media (max-width: 768px) {
+            .container, .form-section, .search-section {
+                padding: 20px;
+            }
+
+            h1 {
+                font-size: 1.8em;
+            }
+
+            li {
+                font-size: 1em;
+            }
+
+            .search-group {
+                flex-direction: column; 
+                gap: 10px;
+            }
+
+                .search-group input[type="text"] {
+                    width: 100%;
+                }
+
+                .search-group button {
+                    width: 100%;
+                }
+        }
+    </style>
+</head>
+<body>
+    <nav style="margin-bottom: 20px; font-size: 1.1em; padding: 10px; background-color: #e0e7f2; border-radius: 8px; box-shadow: 0 2px 5px rgba(0,0,0,0.05);">
+        <a href="index.html" style="margin-right: 25px; text-decoration: none; color: #0056b3; font-weight: bold; transition: color 0.3s ease;">Tipos de Operación</a>
+        <a href="Journal.html" style="text-decoration: none; color: #0056b3; font-weight: bold; transition: color 0.3s ease;">Registros de Transacción</a>
+    </nav>
+    <div class="container">
+        <h1>Tipos de Operación</h1>
+        <div class="search-section">
+            <h2>Buscar Operaciones</h2>
+            <div class="search-group">
+                <input type="text" id="searchDesc" placeholder="Buscar por descripción...">
+                <button id="searchButton">Buscar</button>
+            </div>
+            <ul id="listaTipos">
+                <div class="message" id="loadingMessage">Cargando tipos de operación...</div>
+            </ul>
+        </div>
+    </div>
+
+    <div class="form-section">
+        <h2>Registrar Nuevo Tipo de Operación</h2>
+        <form id="tipoOperacionForm">
+            <div class="form-group">
+                <label for="fiidoperacion">ID Operación:</label>
+                <input type="number" id="fiidoperacion" name="Fiidoperacion" required>
+            </div>
+            <div class="form-group">
+                <label for="fcdescoper">Descripción:</label>
+                <input type="text" id="fcdescoper" name="Fcdescoper" required>
+            </div>
+            <div class="form-group">
+                <label for="fcusuarioalta">Usuario de Alta:</label>
+                <input type="text" id="fcusuarioalta" name="Fcusuarioalta" required>
+            </div>
+            <button type="submit">Registrar Tipo</button>
+        </form>
+        <div id="responseMessage"></div>
+    </div>
+
+    <script>
+        $(document).ready(function () {
+            const baseUrl = `${window.location.protocol}//${window.location.host}`;
+            
+            const obtenerApiUrl = `${baseUrl}/api/Cajero/ObtenerTiposOperacion`;
+            const insertarApiUrl = `${baseUrl}/api/Cajero/InsertarTipoOperacion`;
+
+            
+            let todosLosTipos = [];
+
+            // Función para cargar y mostrar los tipos de operación
+            function cargarTiposOperacion(filtro = '') {
+                $('#listaTipos').empty(); 
+                $('#listaTipos').append('<div class="message" id="loadingMessage">Cargando tipos de operación...</div>');
+
+                $.ajax({
+                    url: obtenerApiUrl,
+                    type: 'GET',
+                    success: function (response) {
+                        $('#loadingMessage').remove(); 
+                        if (response.Codigo === 200) {
+                            if (response.Data && response.Data.length > 0) {
+                                todosLosTipos = response.Data;
+                                const tiposFiltrados = todosLosTipos.filter(tipo =>
+                                    tipo.Fcdescoper.toLowerCase().includes(filtro.toLowerCase())
+                                );
+
+                                if (tiposFiltrados.length > 0) {
+                                    tiposFiltrados.forEach(function (tipo) {
+                                        $('#listaTipos').append(`<li>${tipo.Fcdescoper}</li>`);
+                                    });
+                                } else {
+                                    $('#listaTipos').append('<li class="message">No se encontraron tipos de operación con ese filtro.</li>');
+                                }
+                            } else {
+                                $('#listaTipos').append('<li class="message">No se encontraron tipos de operación.</li>');
+                            }
+                        } else {
+                            $('#listaTipos').append(`<li class="message" style="color: red;">Error al cargar: ${response.Mensaje || 'Código de respuesta no 200'}</li>`);
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        $('#loadingMessage').remove(); 
+                        console.error("Error en la petición AJAX (GET):", status, error, xhr);
+                        $('#listaTipos').append(`<li class="message" style="color: red;">Error de conexión con el servidor: ${status} - ${error}</li>`);
+                        if (xhr.status === 404) {
+                            $('#listaTipos').append(`<li class="message" style="color: orange;">Verifica la URL de la API: ${obtenerApiUrl}</li>`);
+                        }
+                    }
+                });
+            }
+
+            // --- Lógica para el formulario de inserción (POST) ---
+            $('#tipoOperacionForm').submit(function (event) {
+                event.preventDefault(); 
+
+                const tipoOperacionData = {
+                    Fiidoperacion: parseInt($('#fiidoperacion').val()), 
+                    Fcdescoper: $('#fcdescoper').val(),
+                    Fcusuarioalta: $('#fcusuarioalta').val()
+                };
+
+                
+                if (isNaN(tipoOperacionData.Fiidoperacion) || !tipoOperacionData.Fcdescoper || !tipoOperacionData.Fcusuarioalta) {
+                    $('#responseMessage').text('Por favor, completa todos los campos correctamente.').removeClass('success').addClass('error');
+                    return;
+                }
+
+                $.ajax({
+                    url: insertarApiUrl,
+                    type: 'POST',
+                    contentType: 'application/json', 
+                    data: JSON.stringify(tipoOperacionData), 
+                    success: function (response) {
+                        const messageDiv = $('#responseMessage');
+                        if (response.Codigo === 200) {
+                            messageDiv.text(response.Mensaje).removeClass('error').addClass('success');
+                            $('#tipoOperacionForm')[0].reset(); 
+                            cargarTiposOperacion(); 
+                        } else {
+                            messageDiv.text(`Error: ${response.Mensaje}`).removeClass('success').addClass('error');
+                        }
+                    },
+                    error: function (xhr, status, error) {
+                        const messageDiv = $('#responseMessage');
+                        let errorMessage = `Error en la petición AJAX (POST): ${status} - ${error}`;
+                        if (xhr.responseJSON && xhr.responseJSON.Message) {
+                            errorMessage += `\nDetalle: ${xhr.responseJSON.Message}`;
+                        }
+                        console.error(errorMessage, xhr);
+                        messageDiv.text(errorMessage).removeClass('success').addClass('error');
+                    }
+                });
+            });
+
+            
+            $('#searchButton').click(function () {
+                const searchTerm = $('#searchDesc').val();
+                cargarTiposOperacion(searchTerm); 
+            });
+
+            
+            $('#searchDesc').keypress(function (event) {
+                if (event.which === 13) { 
+                    $('#searchButton').click(); 
+                }
+            });
+
+            
+            cargarTiposOperacion();
+        });
+    </script>
+</body>
+</html>
